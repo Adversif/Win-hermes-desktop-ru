@@ -423,7 +423,31 @@ export const ru: Translations = {
       signOutFailed: 'Ошибка выхода',
       testFailed: 'Тест удалённого шлюза не удался',
       applyFailed: 'Не удалось применить настройки шлюза',
-      saveFailed: 'Не удалось сохранить'
+      saveFailed: 'Не удалось сохранить',
+      remoteUrlPlaceholder: 'https://gateway.example.com/hermes'
+    },
+    gatewayPage: {
+      gatewayConnection: 'Подключение к шлюзу',
+      envOverride: 'переопределение env',
+      localGateway: 'Локальный шлюз',
+      localGatewayDesc: 'Запустить приватный бэкенд Hermes на localhost. Это режим по умолчанию, работает офлайн.',
+      remoteGateway: 'Удалённый шлюз',
+      remoteGatewayDesc: 'Подключить это десктопное приложение к удалённому бэкенду Hermes. Хостируемые шлюзы используют OAuth или логин/пароль; собственные могут использовать сессионный токен.',
+      remoteUrl: 'URL удалённого шлюза',
+      remoteUrlDesc: 'Базовый URL для дашборда. Поддерживаются префиксы путей, например /hermes.',
+      remoteUrlPlaceholder: 'https://gateway.example.com/hermes',
+      authentication: 'Аутентификация',
+      sessionToken: 'Сессионный токен',
+      sessionTokenDesc: 'Токен сессии дашборда для REST и WebSocket. Оставьте пустым, чтобы сохранить текущий.',
+      diagnostics: 'Диагностика',
+      diagnosticsDesc: 'Открыть desktop.log в файловом менеджере — полезно при ошибках запуска шлюза.',
+      testRemote: 'Проверить подключение',
+      saveForNextRestart: 'Сохранить до перезапуска',
+      saveAndReconnect: 'Сохранить и переподключить',
+      openLogs: 'Открыть логи',
+      checkingAuth: 'Проверка метода аутентификации шлюза...',
+      settingsUnavailable: 'Настройки шлюза недоступны',
+      settingsUnavailableDesc: 'IPC-мост десктопа не предоставляет настройки шлюза.'
     },
     keys: {
       loading: 'Загрузка возможностей...',
