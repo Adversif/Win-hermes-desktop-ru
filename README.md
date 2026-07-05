@@ -13,12 +13,24 @@
 
 <p align="center">
   <b>Автоматическая установка русского языка в десктопном приложении Hermes Agent.</b><br>
-  Одна команда — и весь интерфейс на русском.
+  Одна команда — и весь интерфейс на русском. Поддержка Windows 11 и macOS.
 </p>
 
 ---
 
 ## ⚡ Быстрая установка
+
+### Windows 11
+
+```powershell
+git clone https://github.com/Adversif/Win-hermes-desktop-ru.git
+cd Win-hermes-desktop-ru
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+> **Требования:** Windows 10/11, Python 3.10+ в PATH (`winget install Python.Python.3.11`), Node.js (ставится вместе с Hermes), установленный [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
+
+### macOS
 
 ```bash
 git clone https://github.com/warment/hermes-desktop-ru.git
@@ -32,7 +44,7 @@ cd hermes-desktop-ru
 curl -sSL https://raw.githubusercontent.com/warment/hermes-desktop-ru/main/install.sh | bash
 ```
 
-После установки: **Settings** → **Appearance** → **Русский**
+После установки (любая ОС): **Settings** → **Appearance** → **Русский**
 
 ---
 
@@ -57,56 +69,78 @@ curl -sSL https://raw.githubusercontent.com/warment/hermes-desktop-ru/main/insta
 
 ## 🛡️ Автоматическое обновление
 
-При обновлении Hermes русский перевод **автоматически пере-применяется** через macOS LaunchAgent. Скрипт следит за файлами Hermes и при обновлении снова применяет патч.
+- **macOS:** через `LaunchAgent` (`~/Library/LaunchAgents/com.hermes-desktop-ru.patcher.plist`). Срабатывает при изменении файлов Hermes.
+- **Windows 11:** через **Task Scheduler** (задача `Hermes Desktop RU Auto-Patch`), повтор каждые 15 минут. Срабатывает, если `ru.ts` пропал (Hermes обновился и затер файлы). Лог в `Win-hermes-desktop-ru/logs/auto-patch.log`.
+
+При обновлении Hermes русский перевод пере-применяется автоматически на обеих платформах.
 
 ---
 
 ## 🗑️ Удаление
 
+### Windows
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\uninstall.ps1
+```
+
+### macOS
+
 ```bash
 ./uninstall.sh
 ```
 
-Восстановит оригинальные файлы из бэкапа и удалит русский перевод.
+В обоих случаях: восстановятся оригинальные файлы из последнего бэкапа, удалится русский перевод и снимется регистрация авто-обновления.
 
 ---
 
 ## 📁 Структура
 
 ```
-hermes-desktop-ru/
-├── install.sh              # Установщик
-├── uninstall.sh            # Удаление
+Win-hermes-desktop-ru/
+├── install.sh              # Установщик (macOS)
+├── install.ps1             # Установщик (Windows)       ← форк Adversif
+├── uninstall.sh            # Удаление (macOS)
+├── uninstall.ps1           # Удаление (Windows)         ← форк Adversif
 ├── README.md               # Документация
 ├── patches/
 │   ├── ru.ts               # Русский перевод интерфейса (~850 строк)
-│   └── ru-constants.ts     # Русские названия полей настроек
+│   ├── ru-constants.ts     # Русские названия полей настроек
+│   ├── en.ts.reference     # Снимок оригинального en.ts (для отката)
+│   └── types.ts.reference  # Снимок оригинального types.ts (для отката)
 └── scripts/
-    ├── patch-components.py # Патч компонентов настроек
-    ├── patch-skills.py     # Патч описаний навыков
-    └── auto-patch.sh       # Auto-reapply при обновлении
+    ├── apply-i18n-patches.py # Кросс-платформенный применитель всех патчей
+    ├── patch-components.py  # Патч компонентов настроек
+    ├── patch-skills.py      # Патч описаний навыков
+    ├── auto-patch.sh        # Auto-reapply (macOS, через LaunchAgent)
+    └── auto-patch.ps1       # Auto-reapply (Windows, через Task Scheduler)   ← форк Adversif
 ```
 
 ---
 
 ## 🔧 Как это работает
 
-1. `install.sh` находит установку Hermes в стандартных расположениях
-2. Создаёт бэкап оригинальных файлов в `.ru-backup-*`
+1. `install.{sh,ps1}` находит установку Hermes в стандартных расположениях  
+   (macOS: `~/.hermes/hermes-agent`; Windows: `%LOCALAPPDATA%\hermes\hermes-agent`)
+2. Создаёт бэкап оригинальных файлов в `.ru-backup-<timestamp>/`
 3. Копирует `ru.ts` и `ru-constants.ts` в дерево исходников
-4. Патчит `types.ts`, `languages.ts`, `catalog.ts` для регистрации ru
-5. Патчит компоненты настроек (заменяет захардкоженные строки на `t.*`)
-6. Патчит `skills/index.tsx` для перевода описаний навыков
-7. Пересобирает приложение (`npm run pack`)
-8. Устанавливает LaunchAgent для auto-reapply при обновлении
+4. Запускает `scripts/apply-i18n-patches.py` (единый кросс-платформенный скрипт), который:
+   - Регистрирует `ru` в i18n-системе (`types.ts`, `languages.ts`, `catalog.ts`)
+   - Патчит компоненты настроек (заменяет захардкоженные строки на `t.*`)
+   - Патчит `skills/index.tsx` для перевода описаний навыков
+5. Пересобирает приложение (`npm run pack`)
+6. Регистрирует авто-обновление:
+   - macOS: LaunchAgent
+   - Windows: задача Task Scheduler (интервал 15 минут)
 
 ---
 
 ## 📋 Требования
 
-- macOS (для LaunchAgent auto-patcher)
-- Hermes Agent установлен в одном из стандартных расположений
-- Node.js и npm (для сборки)
+| Платформа | Требования |
+|---|---|
+| **macOS** | Hermes Agent Desktop, Node.js и npm, стандартный bash |
+| **Windows 11** | Hermes Agent Desktop (`%LOCALAPPDATA%\hermes`), Node.js/npm (ставится с Hermes), **Python 3.10+** в PATH |
 
 ---
 

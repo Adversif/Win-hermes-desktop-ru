@@ -32,7 +32,7 @@ def patch(hermes_dir):
         print(f"  [!] File not found: {filepath}")
         return False
 
-    with open(filepath, 'r') as f:
+    with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
     # Check if already patched
@@ -57,7 +57,7 @@ def patch(hermes_dir):
         LOCALIZED_DESC_LINE
     )
 
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
 
     print("  [✓] skills/index.tsx patched")

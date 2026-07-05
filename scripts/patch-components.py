@@ -10,7 +10,7 @@ def patch_file(filepath, replacements):
         print(f"  [!] File not found: {filepath}")
         return False
 
-    with open(filepath, 'r') as f:
+    with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
     original = content
@@ -19,7 +19,7 @@ def patch_file(filepath, replacements):
             content = content.replace(old, new, 1)
 
     if content != original:
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             f.write(content)
         return True
     return False
@@ -27,7 +27,7 @@ def patch_file(filepath, replacements):
 
 def add_useI18n_if_missing(filepath):
     """Add useI18n import and hook if not already present."""
-    with open(filepath, 'r') as f:
+    with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
     if 'useI18n' in content:
@@ -59,7 +59,7 @@ def add_useI18n_if_missing(filepath):
                 func_line + '\n  const { t } = useI18n()'
             )
 
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
     return True
 
