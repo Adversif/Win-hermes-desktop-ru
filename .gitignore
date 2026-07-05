@@ -5,3 +5,6 @@ node_modules/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Builds (large binaries — see Releases tab instead)
+/releases/

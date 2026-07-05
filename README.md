@@ -20,7 +20,13 @@
 
 ## ⚡ Быстрая установка
 
-### Windows 11
+### Windows 11 — готовый .exe
+
+📦 Скачай **[Hermes-Desktop-0.17.0-ru-win-x64-installer.exe](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.0-ru/Hermes-Desktop-0.17.0-ru-win-x64-installer.exe)** (~112 MB) → запусти → следуй инструкциям установщика.
+
+> **Требования:** Windows 10/11 x64, **Python 3.10+** в PATH (нужен установщику для `apply-i18n-patches.py`), Node.js (ставится вместе с Hermes), уже установленный [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
+
+### Из исходников (PowerShell)
 
 ```powershell
 git clone https://github.com/Adversif/Win-hermes-desktop-ru.git
@@ -28,7 +34,7 @@ cd Win-hermes-desktop-ru
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-> **Требования:** Windows 10/11, Python 3.10+ в PATH (`winget install Python.Python.3.11`), Node.js (ставится вместе с Hermes), установленный [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
+> Если Python нет в PATH: `winget install Python.Python.3.11`.
 
 ### macOS
 
