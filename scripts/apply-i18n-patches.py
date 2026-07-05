@@ -372,7 +372,13 @@ def install_gateway_page_block_in_en_ts(hermes_dir):
     if not stripped.endswith("}"):
         print("  [!] en.ts: unexpected end (no closing brace), skipping")
         return
-    insertion = stripped[:-1].rstrip() + "\n\n" + GATEWAY_PAGE_BLOCK + "}\n"
+    # The closing `}` belongs to the last top-level key. Newer Hermes drops
+    # trailing commas, so we must add one before injecting our block,
+    # otherwise tsc complains "',' expected".
+    closing = stripped[:-1].rstrip()
+    if not closing.endswith(","):
+        closing = closing + ","
+    insertion = closing + "\n\n" + GATEWAY_PAGE_BLOCK + "}\n"
     with open(p, "w", encoding="utf-8") as f:
         f.write(insertion)
     print("  [+] en.ts: gatewayPage block installed")
