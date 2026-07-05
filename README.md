@@ -20,25 +20,48 @@
 
 ## ⚡ Быстрая установка
 
-### Windows 11 — два варианта
+### Windows 11 — три варианта
 
-#### 🔧 Вариант 1: готовый .exe (полный пакет, 112 MB)
+#### ⚡ Вариант 1: однофайловый патчер (104 KB) — *рекомендуется*
+
+📥 Скачай **[Hermes-Desktop-0.17.3-ru-patcher.bat](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-patcher.bat)** (~104 KB) → двойной клик → нажми `Y`.
+
+Это **самораспаковывающийся .bat** с базой64-пейлоадом. Скачал → запустил → готово. Внутри:
+- Python-скрипт `apply-i18n-patches.py` (кросс-платформенный патчер)
+- `patches/ru.ts` + `patches/ru-constants.ts` — 130+ ключей перевода
+- Подпатчи для Settings, Gateway, Skills, etc.
+
+Показывает:
+```
+============================================================
+ Hermes Desktop Russian Locale Patcher v0.17.3
+============================================================
+ Detecting Python...
+ Python:  OK
+ Hermes:  C:\Users\adversif\AppData\Local\hermes\hermes-agent
+
+Continue? (Y/N): _
+ Extracting patcher...
+Applying Russian patches to: ...
+[OK] All Russian i18n patches applied successfully
+```
+
+Идемпотентно — можно запускать после каждого обновления Hermes.
+
+> **Когда использовать:** если Hermes Desktop уже установлен.
+> **Требования:** Windows 10/11, **Python 3.10+** в PATH (`winget install Python.Python.3.11`), [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) установленный.
+
+#### 🔧 Вариант 2: полный .exe installer (112 MB) — впервые ставишь Hermes
 
 📦 Скачай **[Hermes-Desktop-0.17.3-ru-win-x64-installer.exe](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-win-x64-installer.exe)** (~112 MB) → запусти → следуй инструкциям установщика.
 
-#### ⚡ Вариант 2: лёгкий патчер (только переводы, 66 KB)
+Содержит Hermes Desktop целиком + русские патчи. Не нужно ничего ставить предварительно.
+
+#### 📦 Вариант 3: лёгкий `.zip` (66 KB) — для любителей распаковки
 
 📦 Скачай **[Hermes-Desktop-0.17.3-ru-patcher.zip](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-patcher.zip)** (~66 KB) → распакуй → двойной клик `install-ru.cmd`.
 
-Это **в 1700× меньше**. Содержит только переводы + Python-скрипт, без пересборки 112 MB Electron-приложения. Применяет патчи к уже установленному Hermes Desktop.
-
-После этого нужно пересобрать Hermes одним из двух способов:
-- **(а)** Установить готовый installer из варианта 1 (поверх существующего)
-- **(б)** Запустить `install.ps1` из полного репо (см. ниже)
-
-> **Когда использовать вариант 2:** если у тебя уже стоит Hermes Desktop из официальных sources и ты не хочешь ждать 112 MB — распакуй патчер, примени, потом пересобери/переустанови. Экономит трафик в 1700× раз.
-
-> **Требования к варианту 2:** Windows 10/11, **Python 3.10+** в PATH (`winget install Python.Python.3.11`), [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) установленный (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
+Содержимое идентично патчер-у внутри .bat, но в виде обычных файлов для аудита.
 
 ### Из исходников (PowerShell)
 
