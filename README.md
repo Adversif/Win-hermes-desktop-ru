@@ -20,11 +20,25 @@
 
 ## ⚡ Быстрая установка
 
-### Windows 11 — готовый .exe
+### Windows 11 — два варианта
 
-📦 Скачай **[Hermes-Desktop-0.17.0-ru-win-x64-installer.exe](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.0-ru/Hermes-Desktop-0.17.0-ru-win-x64-installer.exe)** (~112 MB) → запусти → следуй инструкциям установщика.
+#### 🔧 Вариант 1: готовый .exe (полный пакет, 112 MB)
 
-> **Требования:** Windows 10/11 x64, **Python 3.10+** в PATH (нужен установщику для `apply-i18n-patches.py`), Node.js (ставится вместе с Hermes), уже установленный [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
+📦 Скачай **[Hermes-Desktop-0.17.3-ru-win-x64-installer.exe](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-win-x64-installer.exe)** (~112 MB) → запусти → следуй инструкциям установщика.
+
+#### ⚡ Вариант 2: лёгкий патчер (только переводы, 66 KB)
+
+📦 Скачай **[Hermes-Desktop-0.17.3-ru-patcher.zip](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-patcher.zip)** (~66 KB) → распакуй → двойной клик `install-ru.cmd`.
+
+Это **в 1700× меньше**. Содержит только переводы + Python-скрипт, без пересборки 112 MB Electron-приложения. Применяет патчи к уже установленному Hermes Desktop.
+
+После этого нужно пересобрать Hermes одним из двух способов:
+- **(а)** Установить готовый installer из варианта 1 (поверх существующего)
+- **(б)** Запустить `install.ps1` из полного репо (см. ниже)
+
+> **Когда использовать вариант 2:** если у тебя уже стоит Hermes Desktop из официальных sources и ты не хочешь ждать 112 MB — распакуй патчер, примени, потом пересобери/переустанови. Экономит трафик в 1700× раз.
+
+> **Требования к варианту 2:** Windows 10/11, **Python 3.10+** в PATH (`winget install Python.Python.3.11`), [Hermes Agent Desktop](https://hermes-agent.nousresearch.com/) установленный (по умолчанию в `%LOCALAPPDATA%\hermes\hermes-agent`).
 
 ### Из исходников (PowerShell)
 
