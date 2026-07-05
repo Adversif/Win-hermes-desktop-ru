@@ -144,6 +144,46 @@ Win-hermes-desktop-ru/
 
 ---
 
+## ⚠️ Известные ограничения
+
+### Вкладка «Шлюз» (Gateway) падает с `Cannot read properties of undefined (reading 'remoteUrlPlaceholder')`
+
+**Симптом:** При выборе русского языка и переходе на вкладку Шлюз в `desktop.log` появляется ошибка:
+
+```
+[renderer console] TypeError: Cannot read properties of undefined (reading 'remoteUrlPlaceholder')
+[renderer console] TypeError: Cannot read properties of undefined (reading 'createTitle')
+```
+
+**Что работает:** Russian UI работает на ~70% (везде где warment перевёл ключи). Затронуты только компоненты, ссылающиеся на ключи, которых нет в `ru.ts` (в основном `gatewayPage.*`, частично `sidebar.*`).
+
+**Workaround:** Переключиться на английский при работе со вкладкой Шлюз (Settings → Appearance → Language → English, потом обратно на Русский).
+
+**Корневая причина:** Hermes Desktop 0.17 имеет дополнительные namespace'ы (`gatewayPage`, `fileMenu`, `remoteDisplayBanner`, `starmap`, `statusStack`) и расширенные ключи внутри существующих (`sidebar.createTitle`, `cron.createTitle` — не в warment-версии, но в en.ts). `apply-i18n-patches.py` патчит `catalog.ts` через `deepMerge(en, _ru)` для fallback'а — это работает для `fileMenu`/`remoteDisplayBanner`/`starmap`/`statusStack`, **но runtime берёт `gatewayPage.remoteUrlPlaceholder` где-то не через `TRANSLATIONS.ru` глубокого слияния**. Подозрение: Hermes server-side (Python backend) имеет свою runtime-таблицу i18n, либо есть второй source-of-truth для переводов, который не покрыт нашим `catalog.ts` патчем.
+
+**Куда смотреть для дальнейшего дебага:**
+- `apps/desktop/src/i18n/context.tsx` — React-context с `t`
+- `apps/desktop/src/i18n/runtime.ts` — path-based lookup `translateNow('foo.bar.baz')` (это graceful, не падает)
+- `apps/desktop/src/i18n/catalog.ts` — наш `deepMerge(en, _ru)` после `apply-i18n-patches.py`
+- `apps/desktop/src/app/settings/gateway-settings.tsx` — потребитель `t.gatewayPage.*` (на нём стоит `@ts-nocheck`)
+- Hermes Python backend (`apps/desktop/...`) — может отдавать свой `t` через IPC
+
+**Возможные направления фикса:**
+1. Добавить недостающие ключи в `patches/ru.ts` напрямую (например `gatewayPage.remoteUrlPlaceholder: 'https://...'`), без ожидания что `deepMerge` их подхватит
+2. Найти renderer-side источник `t` (возможно, отдельный файл `apps/desktop/dist/...` который генерируется при `npm run postbuild`) и убедиться что он использует наш `TRANSLATIONS.ru`
+3. Сделать PR в `NousResearch/hermes-agent` который добавит пустые дефолты для всех используемых ключей
+4. Репортить баг в warment/hermes-desktop-ru issue tracker
+
+### Логирование
+
+- Ошибки рендерера: `%LOCALAPPDATA%\hermes\logs\desktop.log` (см. `[renderer console]` строки)
+- Ошибки Python backend: `%LOCALAPPDATA%\hermes\logs\agent.log`
+- Hermes GUI логи: `%LOCALAPPDATA%\hermes\logs\gui.log`
+
+Включить DevTools: в `apps/desktop/src/main/index.ts` найти `BrowserWindow` и временно добавить `webPreferences: { devTools: true }`, потом View → Toggle Developer Tools (Ctrl+Shift+I).
+
+---
+
 ## 🤝 Вклад
 
 Приветствуются:
