@@ -27,6 +27,10 @@ def patch_file(filepath, replacements):
 
 def add_useI18n_if_missing(filepath):
     """Add useI18n import and hook if not already present."""
+    # Some Hermes versions don't have every settings file (e.g. mcp-settings.tsx
+    # may have moved to skills/mcp-tab.tsx). Skip silently instead of crashing.
+    if not os.path.exists(filepath):
+        return False
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 

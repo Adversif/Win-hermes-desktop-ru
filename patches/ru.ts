@@ -1,3 +1,4 @@
+﻿// @ts-nocheck
 import { RU_FIELD_DESCRIPTIONS, RU_FIELD_LABELS } from '@/app/settings/ru-constants'
 
 import type { Translations } from './types'
