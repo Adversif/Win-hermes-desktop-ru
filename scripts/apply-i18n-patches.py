@@ -239,6 +239,65 @@ def prepend_ts_nocheck_to_ru_ts(hermes_dir, repo_dir):
     print("  [+] ru.ts: @ts-nocheck added")
 
 
+CATALOG_PATCH = """// @ts-nocheck
+import { en } from './en'
+import { ja } from './ja'
+import type { Locale, Translations } from './types'
+import { ru as _ru } from './ru'
+import { zh } from './zh'
+import { zhHant } from './zh-hant'
+
+// Deep merge: for every path in `base`, if `overlay` has the same path with
+// a primitive value, keep overlay's value (typically a Russian translation);
+// otherwise fall back to base's value (typically English). This guarantees
+// that even when warment's translation file is missing newer namespaces or
+// inner keys, every translation Hermes looks up has SOME string to render.
+function deepMerge(base, overlay) {
+  if (base === null || base === undefined) return overlay
+  if (overlay === null || overlay === undefined) return base
+  if (typeof base !== 'object' || typeof overlay !== 'object') return overlay
+  if (Array.isArray(base) || Array.isArray(overlay)) return overlay
+  const out = { ...base }
+  for (const key of Object.keys(overlay)) {
+    out[key] = deepMerge(base[key], overlay[key])
+  }
+  return out
+}
+
+const ru = deepMerge(en, _ru)
+
+export const TRANSLATIONS: Record<Locale, Translations> = {
+  en,
+  zh,
+  ru,
+  'zh-hant': zhHant,
+  ja
+}
+"""
+
+
+def install_deep_merge_catalog(hermes_dir):
+    """
+    Replace Hermes's `apps/desktop/src/i18n/catalog.ts` with one that uses a
+    recursive deep-merge so Russian keys fall back to English at runtime when
+    warment's translation file is missing newer entries. Without this, the
+    renderer crashes with `Cannot read properties of undefined` whenever
+    Hermes reads a key that ru.ts doesn't yet have.
+    """
+    p = os.path.join(hermes_dir, "apps/desktop/src/i18n/catalog.ts")
+    if not os.path.exists(p):
+        print(f"  [!] catalog.ts not found at {p}, skipping deep-merge")
+        return
+    with open(p, "r", encoding="utf-8") as f:
+        current = f.read()
+    if "deepMerge(en, _ru)" in current:
+        print("  [~] catalog.ts: already deep-merged")
+        return
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(CATALOG_PATCH)
+    print("  [+] catalog.ts: deep-merge installed")
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: apply-i18n-patches.py <repo-dir> <hermes-dir>")
@@ -275,6 +334,10 @@ def main():
     print("\n=== Compatibility shims for newer Hermes versions ===")
     prepend_ts_nocheck_to_ru_ts(hermes_dir, repo_dir)
     disable_typecheck_in_settings_files(hermes_dir)
+
+    # Replace Hermes's catalog.ts with a deep-merge implementation, so missing
+    # Russian keys fall back to English at runtime instead of crashing.
+    install_deep_merge_catalog(hermes_dir)
 
     print("\n[OK] All Russian i18n patches applied successfully")
 
