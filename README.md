@@ -87,6 +87,41 @@ cd hermes-desktop-ru
 curl -sSL https://raw.githubusercontent.com/warment/hermes-desktop-ru/main/install.sh | bash
 ```
 
+## 🗑 Удаление / откат
+
+### Только стереть скачанный файл
+
+`.bat` нигде не регистрируется, никаких следов в системе. Просто перемести его в корзину — готово.
+
+### Полный откат русского (вернуть английский)
+
+📥 Скачай **[Hermes-Desktop-0.17.3-ru-uninstaller.bat](https://github.com/Adversif/Win-hermes-desktop-ru/releases/download/v0.17.3-ru/Hermes-Desktop-0.17.3-ru-uninstaller.bat)** (~5 KB) → двойной клик → `Y`.
+
+Сделает всё за тебя:
+1. Снимет задачу `Hermes Desktop RU Auto-Patch` из Планировщика Windows
+2. Восстановит `.ts` файлы из последнего бэкапа (если есть)
+3. Удалит `ru.ts` и `ru-constants.ts`
+4. Пересоберёт Hermes (`npm run pack`)
+
+Идемпотентно. После завершения Hermes снова на английском.
+
+### Вручную (PowerShell)
+
+```powershell
+# Из клонированного репо
+cd Win-hermes-desktop-ru
+powershell -ExecutionPolicy Bypass -File .\uninstall.ps1
+```
+
+Или в один шаг:
+```powershell
+schtasks /Delete /TN "Hermes Desktop RU Auto-Patch" /F
+rm "$env:LOCALAPPDATA\hermes\hermes-agent\apps\desktop\src\i18n\ru.ts"
+rm "$env:LOCALAPPDATA\hermes\hermes-agent\apps\desktop\src\app\settings\ru-constants.ts"
+cd "$env:LOCALAPPDATA\hermes\hermes-agent\apps\desktop"
+npm run pack
+```
+
 После установки (любая ОС): **Settings** → **Appearance** → **Русский**
 
 ---
